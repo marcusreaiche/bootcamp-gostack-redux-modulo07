@@ -1,10 +1,12 @@
 import React from "react";
 import { MdRemoveCircleOutline, MdAddCircleOutline, MdDelete } from "react-icons/md";
+import { connect } from "react-redux";
 
 import { Container, ProductTable, Total } from "./styles";
+import { formatPrice } from "../../util/format";
 
-
-export default function Cart() {
+function Cart({ basket }) {
+  console.tron.log(basket);
   return (
     <Container>
       <ProductTable>
@@ -17,36 +19,38 @@ export default function Cart() {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>
-              <img 
-                src="https://static.netshoes.com.br/produtos/tenis-asics-gel-court-speed-masculino/76/D18-4528-076/D18-4528-076_zoom1.jpg?ims=120x" 
-                alt="Asics"/>
-            </td>
-            <td>
-              <strong>Asics</strong>
-              <span>$129.90</span>
-            </td>
-            <td>
-              <div>
+          {basket.map(product => (
+            <tr key={product.id}>
+              <td>
+                <img 
+                  src={product.image} 
+                  alt={product.title}/>
+              </td>
+              <td>
+                <strong>{product.title}</strong>
+                <span>{product.priceFormatted}</span>
+              </td>
+              <td>
+                <div>
+                  <button type="button">
+                    <MdRemoveCircleOutline size={20} color="#7159c1" />
+                  </button>
+                  <input type="number" readOnly value={product.qty} />
+                  <button type="button">
+                    <MdAddCircleOutline size={20} color="#7159c1" />
+                  </button>
+                </div>
+              </td>
+              <td>
+                <strong>{product.subtotal}</strong>
+              </td>
+              <td>
                 <button type="button">
-                  <MdRemoveCircleOutline size={20} color="#7159c1" />
+                  <MdDelete color="#7159c1" size={20} />
                 </button>
-                <input type="number" readOnly value={2} />
-                <button type="button">
-                  <MdAddCircleOutline size={20} color="#7159c1" />
-                </button>
-              </div>
-            </td>
-            <td>
-              <strong>$259.80</strong>
-            </td>
-            <td>
-              <button type="button">
-                <MdDelete color="#7159c1" size={20} />
-              </button>
-            </td>
-          </tr>
+              </td>
+            </tr>
+          ))}          
         </tbody>
       </ProductTable>
       <footer>
@@ -60,3 +64,32 @@ export default function Cart() {
     </Container>
   );
 }
+
+const mapStateToProps = state => {
+  const {cart} = state;
+  // Aggregate the product list
+  const basket = cart.reduce((acc, item) => {
+    const { id } = item;
+    const search = acc.find(elem => elem.id === id);
+    
+    if (search) {
+      // product already in basket
+      search.qty += 1;
+      return acc;
+    }
+    else {
+      // new product in basket
+      const itemCopy = {...item}; // this is a shallow copy!
+      itemCopy.qty = 1;
+      return [...acc, itemCopy];
+    }
+  }, []);
+  return { 
+    basket: basket.map(product => {
+      product.subtotal = formatPrice(product.price * product.qty);
+      return product;
+    }), 
+  };
+}
+
+export default connect(mapStateToProps)(Cart);
