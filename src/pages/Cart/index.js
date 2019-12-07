@@ -7,14 +7,14 @@ import * as CartActions from "../../store/modules/cart/actions";
 import { Container, ProductTable, Total } from "./styles";
 import { formatPrice } from "../../util/format";
 
-function Cart({ cart, total, removeFromCart, updateAmount }) {
+function Cart({ cart, total, removeFromCart, updateAmountRequest }) {
   
   function increment(product) {
-    return updateAmount(product.id, product.amount + 1);
+    return updateAmountRequest(product.id, product.amount + 1);
   }
   
   function decrement(product) {
-    return updateAmount(product.id, product.amount - 1);
+    return updateAmountRequest(product.id, product.amount - 1);
   }
   
   
