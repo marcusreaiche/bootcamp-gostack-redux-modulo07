@@ -1,12 +1,23 @@
 import React from "react";
 import { MdRemoveCircleOutline, MdAddCircleOutline, MdDelete } from "react-icons/md";
 import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 
+import * as CartActions from "../../store/modules/cart/actions";
 import { Container, ProductTable, Total } from "./styles";
 import { formatPrice } from "../../util/format";
 
-function Cart({ basket }) {
-  console.tron.log(basket);
+function Cart({ cart, total, removeFromCart, updateAmountRequest }) {
+  
+  function increment(product) {
+    return updateAmountRequest(product.id, product.amount + 1);
+  }
+  
+  function decrement(product) {
+    return updateAmountRequest(product.id, product.amount - 1);
+  }
+  
+  
   return (
     <Container>
       <ProductTable>
@@ -19,7 +30,7 @@ function Cart({ basket }) {
           </tr>
         </thead>
         <tbody>
-          {basket.map(product => (
+          { cart.map(product => (
             <tr key={product.id}>
               <td>
                 <img 
@@ -32,11 +43,17 @@ function Cart({ basket }) {
               </td>
               <td>
                 <div>
-                  <button type="button">
+                  <button 
+                    type="button"
+                    onClick={() => decrement(product)}
+                  >
                     <MdRemoveCircleOutline size={20} color="#7159c1" />
                   </button>
-                  <input type="number" readOnly value={product.qty} />
-                  <button type="button">
+                  <input type="number" readOnly value={product.amount} />
+                  <button 
+                    type="button"
+                    onClick={() => increment(product)}
+                  >
                     <MdAddCircleOutline size={20} color="#7159c1" />
                   </button>
                 </div>
@@ -45,12 +62,17 @@ function Cart({ basket }) {
                 <strong>{product.subtotal}</strong>
               </td>
               <td>
-                <button type="button">
+                <button 
+                  type="button" 
+                  onClick={() => removeFromCart(product.id)}
+                >
                   <MdDelete color="#7159c1" size={20} />
                 </button>
               </td>
             </tr>
-          ))}          
+          ))}
+          
+          
         </tbody>
       </ProductTable>
       <footer>
@@ -58,38 +80,25 @@ function Cart({ basket }) {
 
         <Total>
           <span>TOTAL</span>
-          <strong>$1920.28</strong>
+          <strong>{total}</strong>
         </Total>
       </footer>
     </Container>
   );
 }
 
-const mapStateToProps = state => {
-  const {cart} = state;
-  // Aggregate the product list
-  const basket = cart.reduce((acc, item) => {
-    const { id } = item;
-    const search = acc.find(elem => elem.id === id);
-    
-    if (search) {
-      // product already in basket
-      search.qty += 1;
-      return acc;
-    }
-    else {
-      // new product in basket
-      const itemCopy = {...item}; // this is a shallow copy!
-      itemCopy.qty = 1;
-      return [...acc, itemCopy];
-    }
-  }, []);
-  return { 
-    basket: basket.map(product => {
-      product.subtotal = formatPrice(product.price * product.qty);
-      return product;
-    }), 
-  };
-}
+const mapStateToProps = state => ({
+  cart: state.cart.map(product => ({
+    ...product,
+    subtotal: formatPrice(product.price * product.amount),
+  })),
+  total: formatPrice(state.cart.reduce((total, product) => {
+    return total + product.price * product.amount;
+  }, 0)),
+});
 
-export default connect(mapStateToProps)(Cart);
+const mapDispatchToProps = dispatch => bindActionCreators(CartActions, dispatch);
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps)(Cart);
