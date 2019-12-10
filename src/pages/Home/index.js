@@ -1,16 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { MdAddShoppingCart } from "react-icons/md";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
+import { useSelector, useDispatch } from "react-redux";
 
 import * as CartActions from "../../store/modules/cart/actions";
 import { ProductList } from "./styles";
 import { formatPrice } from "../../util/format";
 import api from "../../services/api";
 
-function Home({ addToCartRequest, amount }) {
+export default function Home({ addToCartRequest }) {
   // Initializing products state
   const [products, setProducts] = useState([]);
+  // amount variable
+const amount = useSelector(state => state.cart.reduce((amountObj, product) => {
+  amountObj[product.id] = product.amount;
+  return amountObj;
+}, {}));
+  // dispatch
+  const dispatch = useDispatch();
+  
   // Fetching data when mounting
   useEffect(() => {
     async function fetchProducts() {
@@ -25,7 +32,7 @@ function Home({ addToCartRequest, amount }) {
   }, []);
   
   function handleAddProduct(id) {
-    addToCartRequest(id);
+    dispatch(CartActions.addToCartRequest(id));
   }
 
   return (
@@ -55,16 +62,3 @@ function Home({ addToCartRequest, amount }) {
     </ProductList>
   );  
 }
-
-const mapStateToProps = state => ({
-  amount: state.cart.reduce((amount, product) => {
-    amount[product.id] = product.amount;
-    return amount;
-  }, {})
-});
-
-const mapDispatchToProps = dispatch => bindActionCreators(CartActions, dispatch);
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps)(Home);
