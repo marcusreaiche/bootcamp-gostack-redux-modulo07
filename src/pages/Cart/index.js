@@ -2,12 +2,13 @@ import React from "react";
 import { MdRemoveCircleOutline, MdAddCircleOutline, MdDelete } from "react-icons/md";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import { FaShoppingCart } from "react-icons/fa";
 
 import * as CartActions from "../../store/modules/cart/actions";
-import { Container, ProductTable, Total } from "./styles";
+import { Container, ProductTable, Total, EmptyShoppingCart } from "./styles";
 import { formatPrice } from "../../util/format";
 
-function Cart({ cart, total, removeFromCart, updateAmountRequest }) {
+function Cart({ cart, total, cartSize, removeFromCart, updateAmountRequest }) {
   
   function increment(product) {
     return updateAmountRequest(product.id, product.amount + 1);
@@ -20,7 +21,11 @@ function Cart({ cart, total, removeFromCart, updateAmountRequest }) {
   
   return (
     <Container>
-      <ProductTable>
+      {
+        cartSize 
+          ? (
+        <>
+        <ProductTable>
         <thead>
           <tr>
             <th />
@@ -70,9 +75,7 @@ function Cart({ cart, total, removeFromCart, updateAmountRequest }) {
                 </button>
               </td>
             </tr>
-          ))}
-          
-          
+          ))}          
         </tbody>
       </ProductTable>
       <footer>
@@ -83,6 +86,15 @@ function Cart({ cart, total, removeFromCart, updateAmountRequest }) {
           <strong>{total}</strong>
         </Total>
       </footer>
+      </>
+          )
+          : (
+            <EmptyShoppingCart>
+              <FaShoppingCart size={150} />
+              <p>Your cart is empty</p> 
+            </EmptyShoppingCart>
+          )
+      }
     </Container>
   );
 }
@@ -95,6 +107,7 @@ const mapStateToProps = state => ({
   total: formatPrice(state.cart.reduce((total, product) => {
     return total + product.price * product.amount;
   }, 0)),
+  cartSize: state.cart.length,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators(CartActions, dispatch);

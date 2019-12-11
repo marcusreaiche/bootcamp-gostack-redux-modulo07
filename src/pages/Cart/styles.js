@@ -29,6 +29,24 @@ export const Container = styled.div`
   }
 `;
 
+export const EmptyShoppingCart = styled.div`
+  text-align: center;
+  font-size: 30px;
+  font-weight: bold;
+  
+  svg {
+    opacity: 0.15;
+    transition: opacity 0.3s;
+
+    &:hover {
+      opacity: 0.3;
+    }
+
+  }
+
+`;
+
+
 export const ProductTable = styled.table`
   width: 100%;
 
