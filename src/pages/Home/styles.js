@@ -1,6 +1,33 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { darken } from "polished";
 
+const rotate = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+`;
+
+export const Loading = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  svg {
+    animation: ${rotate} 1.2s linear infinite;
+    color: #eee;
+  }
+`;
 
 export const ProductList = styled.ul`
   

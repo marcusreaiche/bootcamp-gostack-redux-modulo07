@@ -1,10 +1,11 @@
 import React, { Component } from "react";
+import { FaSpinner } from "react-icons/fa";
 import { MdAddShoppingCart } from "react-icons/md";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import * as CartActions from "../../store/modules/cart/actions";
-import { ProductList } from "./styles";
+import { ProductList, Loading } from "./styles";
 import { formatPrice } from "../../util/format";
 import api from "../../services/api";
 
@@ -15,6 +16,7 @@ class Home extends Component {
     this.state = {
       products: [],
       stock: [],
+      loading: true,
     }
     // Binding methods
     this.handleAddProduct = this.handleAddProduct.bind(this);
@@ -29,6 +31,7 @@ class Home extends Component {
     
     this.setState({
       products: data,
+      loading: false,
     });
   }
   
@@ -38,8 +41,15 @@ class Home extends Component {
   }
 
   render() {
-    const { products } = this.state;
+    const { products, loading } = this.state;
     const { amount } = this.props;
+    if(loading) {
+      return (
+        <Loading>
+          <FaSpinner size={100} />
+        </Loading>
+        );
+    }
     return (
       <ProductList>
         {
