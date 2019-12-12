@@ -9,7 +9,7 @@ import history from "../../../services/history";
 
 function* addToCart({ id }){
   
-  // Change the status of the product to loading
+  // Change the loading status of the product to true
   yield put(productLoadingStatus(id));
 
   // Call api to get product stock
@@ -53,11 +53,15 @@ function* addToCart({ id }){
 
 function* updateAmount({ id, amount }) {
   if (amount <= 0) return;
+  // Change the loading status of the product to true
+  yield put(productLoadingStatus(id));
   // Get the product stock
   const stock = yield call(api.get, `/stock/${id}`);
   const stockAmount = stock.data.amount;
   if (amount > stockAmount) {
     toast.error("Desculpe, a quantidade solicitada está fora de estoque");
+    // Change the loading status of the product to false
+    yield put(productLoadingStatus(id, false));
     return;
   }
   else {

@@ -2,10 +2,10 @@ import React from "react";
 import { MdRemoveCircleOutline, MdAddCircleOutline, MdDelete } from "react-icons/md";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { FaShoppingCart } from "react-icons/fa";
+import { FaShoppingCart, FaSpinner } from "react-icons/fa";
 
 import * as CartActions from "../../store/modules/cart/actions";
-import { Container, ProductTable, Total, EmptyShoppingCart } from "./styles";
+import { Container, ProductTable, Total, EmptyShoppingCart, LoadingProduct } from "./styles";
 import { formatPrice } from "../../util/format";
 
 function Cart({ cart, total, cartSize, removeFromCart, updateAmountRequest }) {
@@ -17,8 +17,7 @@ function Cart({ cart, total, cartSize, removeFromCart, updateAmountRequest }) {
   function decrement(product) {
     return updateAmountRequest(product.id, product.amount - 1);
   }
-  
-  
+    
   return (
     <Container>
       {
@@ -54,7 +53,14 @@ function Cart({ cart, total, cartSize, removeFromCart, updateAmountRequest }) {
                   >
                     <MdRemoveCircleOutline size={20} color="#7159c1" />
                   </button>
-                  <input type="number" readOnly value={product.amount} />
+                  {
+                    product.loading
+                      ? (
+                      <LoadingProduct>
+                        <FaSpinner size={20}/>
+                      </LoadingProduct>)
+                      : <input type="number" readOnly value={product.amount} />
+                  }
                   <button 
                     type="button"
                     onClick={() => increment(product)}

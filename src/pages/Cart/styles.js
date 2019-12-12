@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { darken } from "polished";
 
 export const Container = styled.div`
@@ -29,6 +29,26 @@ export const Container = styled.div`
   }
 `;
 
+const rotate = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+`;
+
+export const LoadingProduct = styled.span`
+  display: flex;
+  justify-content: center;
+  min-width: 50px;
+  svg {
+    animation: ${rotate} 1.2s linear infinite;
+    color: #7159c1;
+  }
+`;
+
 export const EmptyShoppingCart = styled.div`
   text-align: center;
   font-size: 30px;
@@ -37,13 +57,10 @@ export const EmptyShoppingCart = styled.div`
   svg {
     opacity: 0.15;
     transition: opacity 0.3s;
-
     &:hover {
       opacity: 0.3;
     }
-
   }
-
 `;
 
 
