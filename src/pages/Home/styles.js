@@ -11,6 +11,13 @@ const rotate = keyframes`
   }
 `;
 
+export const LoadingProduct = styled.span`
+  svg {
+    animation: ${rotate} 1.2s linear infinite;
+    color: #eee;
+  }
+`;
+
 export const Loading = styled.div`
   display: flex;
   flex-direction: column;
@@ -83,7 +90,7 @@ export const ProductList = styled.ul`
         padding: 12px;
         background: rgba(0, 0, 0, 0.1);
 
-        svg {
+        >svg {
           margin-right: 5px;
         }
       }

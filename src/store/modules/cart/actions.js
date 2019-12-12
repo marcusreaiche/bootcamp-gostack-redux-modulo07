@@ -5,6 +5,14 @@ export function addToCartRequest(id) {
   };
 }
 
+export function productLoadingStatus(id, status=true) {
+  return {
+    type: "@cart/LOADING",
+    id,
+    status
+  };
+}
+
 export function addToCartSuccess(product) {
   return {
     type: "@cart/ADD_SUCCESS",

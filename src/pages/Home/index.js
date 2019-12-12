@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import * as CartActions from "../../store/modules/cart/actions";
-import { ProductList, Loading } from "./styles";
+import { ProductList, Loading, LoadingProduct } from "./styles";
 import { formatPrice } from "../../util/format";
 import api from "../../services/api";
 
@@ -15,7 +15,6 @@ class Home extends Component {
     super(props);
     this.state = {
       products: [],
-      stock: [],
       loading: true,
     }
     // Binding methods
@@ -27,6 +26,7 @@ class Home extends Component {
     const data = response.data.map(product => ({
       ...product,
       priceFormatted: formatPrice(product.price),
+      loading: false,
     }));
     
     this.setState({
@@ -42,7 +42,7 @@ class Home extends Component {
 
   render() {
     const { products, loading } = this.state;
-    const { amount } = this.props;
+    const { amount, loadingProduct } = this.props;
     if(loading) {
       return (
         <Loading>
@@ -67,7 +67,12 @@ class Home extends Component {
               >
                 <div>
                   <MdAddShoppingCart size={16} color="#fff" /> 
-                  {amount[product.id] || 0}
+                  {loadingProduct[product.id] 
+                    ? (
+                    <LoadingProduct>
+                      <FaSpinner size={8} />
+                    </LoadingProduct>)
+                    : amount[product.id] || 0}
                 </div>
                 <span>Add to Cart</span>
               </button>
@@ -83,7 +88,11 @@ const mapStateToProps = state => ({
   amount: state.cart.reduce((amount, product) => {
     amount[product.id] = product.amount;
     return amount;
-  }, {})
+  }, {}),
+  loadingProduct: state.cart.reduce((loading, product) => {
+    loading[product.id] = product.loading;
+    return loading;
+  }, {}),
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators(CartActions, dispatch);
